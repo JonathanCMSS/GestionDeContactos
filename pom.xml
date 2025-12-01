@@ -1,13 +1,253 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>group</groupId>
-    <artifactId>GestionDeContactos</artifactId>
-    <version>1.0-SNAPSHOT</version>
+
+    <!-- INFORMACIÓN DEL PROYECTO -->
+    <groupId>edu.ups.gestioncontactos</groupId>
+    <artifactId>gestion-contactos-maven</artifactId>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
+
+    <name>Sistema de Gestión de Contactos</name>
+    <description>
+        Aplicación de escritorio para gestión de contactos con soporte para 
+        internacionalización, programación concurrente y serialización JSON.
+        Desarrollado con Java Swing y Maven.
+    </description>
+
+    <!-- PROPIEDADES DEL PROYECTO -->
     <properties>
+        <!-- Configuración de compilación -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>21</maven.compiler.release>
-        <exec.mainClass>vista.ventana</exec.mainClass>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        
+        <!-- VERSIONES DE DEPENDENCIAS - Centralizadas para facilitar mantenimiento -->
+        <flatlaf.version>3.2.5</flatlaf.version>
+        <gson.version>2.10.1</gson.version>
+        <jackson.version>2.15.3</jackson.version>
+        <slf4j.version>2.0.9</slf4j.version>
+        <junit.version>5.10.1</junit.version>
+        <commons-io.version>2.15.1</commons-io.version>
     </properties>
+
+    <!-- DEPENDENCIAS DEL PROYECTO -->
+    <dependencies>
+        
+        <!-- ========================================== -->
+        <!-- 1. FLATLAF - BIBLIOTECA DE INTERFAZ GRÁFICA MODERNA -->
+        <!-- ========================================== -->
+        <!-- 
+            FlatLaf proporciona un Look & Feel moderno para aplicaciones Swing
+            AUDITORÍA:
+            - Repositorio oficial: https://github.com/JFormDesigner/FlatLaf
+            - Mantenimiento activo: Última versión estable 3.2.5
+            - Licencia: Apache 2.0 (compatible con uso comercial)
+            - Sin vulnerabilidades conocidas en últimas versiones
+            - Amplia adopción en la comunidad Java
+        -->
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>${flatlaf.version}</version>
+        </dependency>
+        
+        <!-- FlatLaf - Temas adicionales -->
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-intellij-themes</artifactId>
+            <version>${flatlaf.version}</version>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 2. GSON - SERIALIZACIÓN Y DESERIALIZACIÓN JSON -->
+        <!-- ========================================== -->
+        <!-- 
+            Gson es la biblioteca de Google para convertir objetos Java a JSON y viceversa
+            AUDITORÍA:
+            - Repositorio oficial: https://github.com/google/gson
+            - Desarrollado y mantenido por Google
+            - Licencia: Apache 2.0
+            - Sin dependencias transitivas (ligera y sin conflictos)
+            - Ampliamente probada y utilizada en producción
+            - Última versión estable: 2.10.1
+        -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 3. JACKSON - ALTERNATIVA PARA JSON (OPCIONAL) -->
+        <!-- ========================================== -->
+        <!-- 
+            Jackson proporciona capacidades avanzadas de procesamiento JSON
+            AUDITORÍA:
+            - Repositorio oficial: https://github.com/FasterXML/jackson
+            - Mantenimiento activo de la comunidad FasterXML
+            - Licencia: Apache 2.0
+            - Más rápido que Gson en algunos escenarios
+            - Soporte completo para Java 8+ features
+            
+            NOTA: Se usa exclusion para evitar dependencias transitivas innecesarias
+        -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <exclusions>
+                <!-- Excluir módulos innecesarios que Jackson incluye por defecto -->
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 4. SLF4J - LOGGING (Sistema de registro de eventos) -->
+        <!-- ========================================== -->
+        <!-- 
+            SLF4J proporciona logging estructurado para debugging y monitoreo
+            AUDITORÍA:
+            - Repositorio oficial: https://github.com/qos-ch/slf4j
+            - Estándar de facto para logging en Java
+            - Licencia: MIT
+            - Configuración simple con implementación básica
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        
+        <!-- Implementación simple de SLF4J para consola -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 5. APACHE COMMONS IO - UTILIDADES DE ARCHIVOS -->
+        <!-- ========================================== -->
+        <!-- 
+            Proporciona utilidades robustas para operaciones con archivos
+            AUDITORÍA:
+            - Repositorio oficial: https://commons.apache.org/proper/commons-io/
+            - Proyecto de Apache Software Foundation
+            - Licencia: Apache 2.0
+            - Ampliamente probada y estable
+            - Facilita operaciones de lectura/escritura de archivos
+        -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 6. JUNIT - TESTING (Solo para desarrollo) -->
+        <!-- ========================================== -->
+        <!-- 
+            Framework para pruebas unitarias
+            AUDITORÍA:
+            - Repositorio oficial: https://github.com/junit-team/junit5
+            - Estándar para testing en Java
+            - Licencia: Eclipse Public License 2.0
+            - Scope: test (no se incluye en el JAR final)
+        -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!-- CONFIGURACIÓN DE BUILD -->
+    <build>
+        <finalName>gestion-contactos</finalName>
+        
+        <plugins>
+            <!-- Plugin de compilación -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin para crear JAR ejecutable con dependencias -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>vista.ventana</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Plugin para recursos (archivos .properties) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+        <!-- Configuración de recursos -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+    </build>
+
+    <!-- REPOSITORIOS -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
 </project>
